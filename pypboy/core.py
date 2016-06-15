@@ -19,7 +19,7 @@ class Pypboy(game.core.Engine):
 		super(Pypboy, self).__init__(*args, **kwargs)
 		self.init_children()
 		self.init_modules()
-		
+
 		self.gpio_actions = {}
 		if config.GPIO_AVAILABLE:
 			self.init_gpio_controls()
@@ -43,7 +43,7 @@ class Pypboy(game.core.Engine):
 		}
 		for module in self.modules.values():
 			module.move(4, 40)
-		self.switch_module("stats")
+		self.switch_module("items")
 
 	def init_gpio_controls(self):
 		for pin in config.GPIO_ACTIONS.keys():
@@ -86,6 +86,8 @@ class Pypboy(game.core.Engine):
 				self.active.handle_action(action)
 
 	def handle_event(self, event):
+		if True in pygame.mouse.get_pressed():
+			print('mouse')
 		if event.type == pygame.KEYDOWN:
 			if (event.key == pygame.K_ESCAPE):
 				self.running = False
@@ -95,8 +97,8 @@ class Pypboy(game.core.Engine):
 		elif event.type == pygame.QUIT:
 			self.running = False
 		elif event.type == config.EVENTS['SONG_END']:
-			if hasattr(config, 'radio'):
-				config.radio.handle_event(event)
+			if hasattr(self, 'active'):
+				self.active.handle_action(action)
 		else:
 			if hasattr(self, 'active'):
 				self.active.handle_event(event)

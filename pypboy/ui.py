@@ -2,6 +2,7 @@ import game
 import config
 import pygame
 import datetime
+import os
 
 
 class Header(game.Entity):
@@ -35,7 +36,6 @@ class Header(game.Entity):
 			self._date = new_date
 
 		super(Header, self).update(*args, **kwargs)
-
 
 class Footer(game.Entity):
 
@@ -71,7 +71,82 @@ class Footer(game.Entity):
 			self.image.blit(text, (offset, 12))
 
 			offset = offset + 120 + (text_width - 100)
+types = ['WG', 'VAL']
+data_string_size = 11
 
+# Main itemview params
+poses=[0, 97]
+posey = 167
+size = [97, 20]
+class Itemview(game.Entity):
+
+	def __init__(self, items, art_dir='', is_sellable=False):
+		super(Itemview, self).__init__((config.WIDTH, config.HEIGHT))
+		self.is_sellable = is_sellable
+		self.content = ['', ''] if is_sellable else ['']
+		self.items = items
+		self.art_dir = art_dir
+		self.rect[2] = 185
+		self.rect[3] = 185
+		self.art = None
+
+	def set_element(self, index):
+		self.content = [self.items[index][1], self.items[index][2]] if self.is_sellable else [self.items[index][1]]
+		self.art = pygame.image.load(os.path.join(self.art_dir, self.items[index][-1]))
+		if self.is_sellable:
+			self.art = pygame.transform.scale(self.art, (80, 80))
+		else:
+			self.art = pygame.transform.scale(self.art, (160, 160))
+		self.redraw()
+
+	def split_text(self, text, length):
+		textlength = len(text)
+		index = 0
+		elements = []
+		text.rstrip()
+		while index < textlength:
+			t = text[index * length:(index + 1) * length:]
+			elements.append(t)
+			index+=1
+		print(elements)
+		return elements
+
+	def build_content(self, index):
+		if self.is_sellable:
+			toto = '{}{}{}'.format(types[index], ' ' * (data_string_size - (len(types[index]) +len(str(self.content[index])))), self.content[index])
+		else:
+			toto = self.split_text(self.content[index], 30)
+		return toto
+
+	def redraw(self):
+		self.image.fill((0, 0, 0))
+		offset = 5
+		#pygame.draw.line(self.image, (95, 255, 177), (0, 2), (180, 2), 2)
+		if self.is_sellable:
+			pygame.draw.line(self.image, (95, 255, 177), (poses[0], posey ), (poses[0] + size[0] - 4, posey) , 2)
+			pygame.draw.line(self.image, (95, 255, 177), (poses[1], posey ), (poses[1] + size[0] - 4, posey) , 2)
+			pygame.draw.line(self.image, (95, 255, 177), (poses[1] -4, posey ), (poses[1] -4, posey + size[1]) , 2)
+			pygame.draw.line(self.image, (95, 255, 177), (poses[1] + size[0] - 4, posey ), (poses[1] + size[0] - 4, posey + size[1]) , 2)
+			text = config.FONTS[16].render(self.build_content(0), True, (105, 255, 187), (0, 0, 0))
+			self.image.blit(text, (0, posey + 2))
+			text = config.FONTS[16].render(self.build_content(1), True, (105, 255, 187), (0, 0, 0))
+			self.image.blit(text, (97, posey + 2))
+			self.image.blit(self.art, (0, 0))
+		else:
+			pygame.draw.line(self.image, (95, 255, 177), (poses[0], posey ), (poses[0] + size[0] * 2 + 18 , posey) , 2)
+			pygame.draw.line(self.image, (95, 255, 177), (poses[1] + size[0] + 18, posey ), (poses[1] + size[0] +18, posey + size[1]) , 2)
+			index = 0
+			toto = self.build_content(0)
+			for el in toto:
+				print(el)
+				text = config.FONTS[14].render(el, True, (105, 255, 187), (0, 0, 0))
+				self.image.blit(text, (0, posey + 3 + index * (text.get_size()[1] + 6)))
+				index += 1
+			self.image.blit(self.art, (0, 0))
+		# for i in range(len(self.items)):
+		# 	text = config.FONTS[14].render(" %s " % self.items[i], True, (105, 255, 187), (0, 0, 0))
+		# 	self.image.blit(text, (10, offset))
+		# 	offset += text.get_size()[1] + 6
 
 class Menu(game.Entity):
 
@@ -114,6 +189,76 @@ class Menu(game.Entity):
 			self.image.blit(text, (10, offset))
 			offset += text.get_size()[1] + 6
 
+class SelectableMenu(game.Entity):
+	def __init__(self, width, items=[], callbacks=[], select_callback = None, selected=0, multi=False):
+		super(SelectableMenu, self).__init__((width, config.HEIGHT - 80))
+		self.items = items
+		self.callbacks = callbacks
+		self.select_callback = select_callback
+		self.selected = 0
+		self.enabled = []
+		self.select(selected)
+		self.multi = multi;
+
+		if config.SOUND_ENABLED:
+			self.dial_move_sfx = pygame.mixer.Sound('sounds/dial_move.ogg')
+
+	def select(self, item):
+		self.selected = item
+		self.redraw()
+
+	def getEnabled(self):
+		if self.enabled:
+			return self.enabled[0]
+
+	def enableItem(self, index):
+		if index in self.enabled:
+			self.enabled.remove(index)
+			if len(self.callbacks) == 2:
+				self.callbacks[1](index)
+		else:
+			if self.multi is False:
+				self.enabled = []
+
+			self.enabled.append(index)
+			if len(self.callbacks) > 0:
+				self.callbacks[0](index)
+
+		self.redraw()
+
+	def handle_action(self, action):
+		if action == "dial_up":
+			if self.selected > 0:
+				if config.SOUND_ENABLED:
+					self.dial_move_sfx.play()
+				self.select(self.selected - 1)
+				if self.select_callback:
+					self.select_callback(self.selected)
+		if action == "dial_down":
+			if self.selected < len(self.items) - 1:
+				if config.SOUND_ENABLED:
+					self.dial_move_sfx.play()
+				self.select(self.selected + 1)
+				if self.select_callback:
+					self.select_callback(self.selected)
+		if action == "dial_select":
+			if self.selected is not None:
+				if config.SOUND_ENABLED:
+					self.dial_move_sfx.play()
+				self.enableItem(self.selected)
+
+	def redraw(self):
+		self.image.fill((0, 0, 0))
+		offset = 5
+		for i in range(len(self.items)):
+			text = config.FONTS[14].render(" %s " % self.items[i], True, (105, 255, 187), (0, 0, 0))
+			if i == self.selected:
+				selected_rect = (0, offset - 2, 180, text.get_size()[1] + 3)
+				pygame.draw.rect(self.image, (95, 255, 177), selected_rect, 2)
+			if i in self.enabled:
+				pygame.draw.rect(self.image, (95, 255, 177), [9, text.get_size()[1]/2.0 + offset - 2, 6, 6] , 0)
+			self.image.blit(text, (15, offset))
+			offset += text.get_size()[1] + 6
 
 class Scanlines(game.Entity):
 
