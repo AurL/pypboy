@@ -7,7 +7,7 @@ import pypboy.data
 
 from random import choice
 import traceback
-		
+
 
 
 #Radio stuff
@@ -67,7 +67,7 @@ class Map(game.Entity):
 			self._map_surface.blit(image, (tag[1], tag[2]))
 			text = config.FONTS[12].render(tag[0], True, (95, 255, 177), (0, 0, 0))
 			self._map_surface.blit(text, (tag[1] + 17, tag[2] + 4))
-		
+
 		self.image.blit(self._map_surface, (0, 0), area=self._render_rect)
 
 class Radio(pypboy.SubModule):
@@ -79,12 +79,12 @@ class Radio(pypboy.SubModule):
 
 
 class Oscilloscope:
-	def __init__(self): 
+	def __init__(self):
 		# Constants
 		self.WIDTH, self.HEIGHT = 480, 360
 		self.TRACE, self.AFTER, self.GREY = (80, 255, 100),(20, 155, 40),(20, 110, 30)
 		self.embedded = False
-	
+
 	def open(self, screen=None):
         # Open window
 		if screen:
@@ -94,7 +94,7 @@ class Oscilloscope:
 		else:
 			'''Own Display'''
 			self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), 0)
-				
+
 		# Create a blank chart with vertical ticks, etc
 		self.blank = numpy.zeros((self.WIDTH, self.HEIGHT, 3))
 		# Draw x-axis
@@ -108,17 +108,17 @@ class Oscilloscope:
 		self.blank[self.WIDTH - 1, ::] = self.TRACE
 		self.blank[self.WIDTH - 3, ::40] = self.TRACE
 		self.blank[self.WIDTH - 4, ::40] = self.TRACE
-		
+
 		# Draw vertical ticks
 		vticks = [-80, -40, +40, +80]
 		for vtick in vticks: self.blank[::5, self.xaxis + vtick] = self.GREY # Horizontals
 		for vtick in vticks: self.blank[::50, ::5] = self.GREY			   # Verticals
-	
+
 		# Draw the 'blank' screen.
 		pygame.surfarray.blit_array(self.screen, self.blank)	  # Blit the screen buffer
 		pygame.display.flip()									 # Flip the double buffer
-		
-			
+
+
 	def update(self,time,frequency,power):
 		try:
 			pixels = copy.copy(self.blank)
@@ -126,26 +126,26 @@ class Oscilloscope:
 			for x in range(self.WIDTH):
 				offset = offset - 1
 				if offset < -1:
-					offset = offset + 1.1		 
+					offset = offset + 1.1
 				try:
 					pow = power[int(x/10)]
 					log = math.log10( pow )
 					offset = ((pow / math.pow(10, math.floor(log))) + log)*1.8
 				except:
 					pass
-				try: 
-					y = float(self.xaxis) - (math.sin((float(x)+float(time))/5.0)*2.0*offset) 
+				try:
+					y = float(self.xaxis) - (math.sin((float(x)+float(time))/5.0)*2.0*offset)
 					pixels[x][y] = self.TRACE
 					pixels[x][y-1] = self.AFTER
 					pixels[x][y+1] = self.AFTER
 					if abs(y) > 120:
 						pixels[x][y-2] = self.AFTER
 						pixels[x][y+2] = self.AFTER
-				except: 
+				except:
 					pass
 			pygame.surfarray.blit_array(self.screen, pixels)	 # Blit the screen buffer
 			if not self.embedded:
-				pygame.display.flip()  
+				pygame.display.flip()
 		except Exception,e:
 			print traceback.format_exc()
 
@@ -298,18 +298,18 @@ class RadioStation(game.Entity):
 		pygame.mixer.music.load(f)
 		pygame.mixer.music.play()
 		self.state = self.STATES['playing']
-		
+
 	def play(self):
 		if self.state == self.STATES['paused']:
 			pygame.mixer.music.unpause()
 			self.state = self.STATES['playing']
 		else:
 			self.play_random()
-		
+
 	def pause(self):
 		self.state = self.STATES['paused']
 		pygame.mixer.music.pause()
-		
+
 	def stop(self):
 		self.state = self.STATES['stopped']
 		pygame.mixer.music.stop()

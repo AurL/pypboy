@@ -14,8 +14,8 @@ class Module(BaseModule):
 	def __init__(self, *args, **kwargs):
 		self.submodules = [
 			weapons.Module(self),
-			apparel.Module(self),
 			aid.Module(self),
+			apparel.Module(self),
 			misc.Module(self),
 			ammo.Module(self)
 		]

@@ -19,7 +19,7 @@ except Exception as e:
 from pypboy.core import Pypboy
 
 try:
-    pygame.mixer.init(23000, -16, 2, 2048)
+    pygame.mixer.init(44000, -16, 2, 2048)
     config.SOUND_ENABLED = True
 except:
     config.SOUND_ENABLED = False

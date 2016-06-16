@@ -99,27 +99,32 @@ SPECIAL = [
 	'Luck             8'
 ]
 
-# Items [Name, weight, value, icon_path_in_prop_dir]
+# Items [Name, Damage, weight, value, State(CND), icon_path_in_prop_dir]
 WEAPON = [
-	['Big fucking rifle', 1158, 20, 'rifle.png'],
-	['Baseball bat', 18, 20, 'bat.png'],
-	['Tazer', 18, 20, 'tazer.png']
+	['Big fucking rifle','130', '7', 1158, 20,'556mm(36/232)', 'rifle.png'],
+	['Baseball bat','130', '7', 18, 20,'p382', 'bat.png'],
+	['Tazer','130', '7', 18, 20,'bool', 'tazer.png']
 ]
 
 APPAREL = [
-	['Vault 101 suit', 2, 150, 'vault.png'],
-	['Steampunk glasses', 2, 150, 'vault.png'],
-	['Steampunk hat', 2, 150, 'vault.png'],
-	['Moon boots', 2, 150, 'vault.png']
+	['Vault 101 suit', 2, 150, 'fancyoutfit.png'],
+	['Steampunk glasses', 2, 150, 'sunglasses.png'],
+	['Steampunk hat', 2, 150, 'hat.png'],
+	['Moon boots', 2, 150, 'fancyoutfit.png']
 ]
 
+# Weight, Value, effects
 AIDS = [
-	['Stimpack', 3, 10, 'stimpak.png'],
-	['Rad-Away', 3, 10, 'stimpak.png'],
-	['Stealth boy', 3, 10, 'stimpak.png'],
-	['Popcorn', 3, 500, 'stimpak.png'],
-	['Rat meat', 3, 10, 'stimpak.png'],
-	['Cereal bar', 3, 10, 'stimpak.png']
+	['Bubble Gum', 1, 1, 'HIT+1  RAD+1' ,'bubblegum.png'],
+	['Stimpack', 0, 75, 'HIT+30 ' ,'stimpack.png'],
+	['Buffout', 0, 20, 'HIT+60 END+3 STR+2'  ,'buffout.png'],
+	['Mentats', 0, 20, 'INT+2 PER+2 CHR+1' ,'mentats.png'],
+	['Nuka Cola',1, 20, 'RAD+3 HIT+2' ,'nukacola.png'],
+	['Psycho', 0, 20, 'DMG +25%' ,'psycho.png'],
+	['RadAway',0, 20, 'RAD-50'  ,'radaway.png'],
+	['Purified Water',1, 20, 'HIT+2' ,'water.png'],
+	['Cram', 1, 5, 'HIT+1 RAD+3' ,'cram.png'],
+	['Jet', 0, 20, 'AP+15' ,'jet.png'],
 ]
 
 MISC = [
@@ -146,6 +151,16 @@ RADIODIR = [
 ]
 
 PERK = [
-	['Computer Whiz', 'Can make one extra attempt to hack a locked-down terminal', 'computerwiz.png']
+	['Cowboy', '25 %% more damage when using any revolver, lever-action firearm, dynamite, knife or hatchet', 'cowboy.png'],
+	['Fast Shot', '', 'fastshot.png'],
+	['Weapon Handling', 'Weapon Strength Requirements -2', 'weaponhandling.png'],
+	['Meat of Champions', "The essence of champions flows through your veins. When you cannibalize corpses you temporarily gain Caesar's intelligence, Mr. House's luck, The King's charisma, and President Kimball's strength.", 'meatofchampions.png'],
+	['Rapid Reload', "Rapid Reload allows you to reload all your weapons 25%% faster than normal. This also has the effect of allowing you to switch ammunition types faster.", 'rapidreload.png'],
+	['Swift Learner', 'You are indeed a Swift Learner with this Perk, as each level gives you an additional +5%% bonus whenever you earn experience points. This is best taken early.', 'swiftlearner.png'],
+	['Vigilant Recycler', "Waste not, want not. When you use Energy Weapons, you are more likely to recover drained ammunition. You also have more efficient recycling recipes available at the wasteland's workbenches.", 'vigilantrecycler.png']
+]
+
+SKILL = [
+	#['Computer Whiz', 'Can make one extra attempt to hack a locked-down terminal', 'computerwiz.png']
 ]
 # OBJECTS

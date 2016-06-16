@@ -4,7 +4,6 @@ import pygame
 import datetime
 import os
 
-
 class Header(game.Entity):
 
 	def __init__(self, headline="", title=""):
@@ -65,7 +64,6 @@ class Footer(game.Entity):
 				text = config.FONTS[12].render("%s%s%s" % (spaces, m, spaces), True, (105, 255, 187), (0, 0, 0))
 				text_width = text.get_size()[0]
 				padding += 1
-			#print(m+" : "+str(text.get_size()))
 			if m == self.selected:
 				pygame.draw.rect(self.image, (95, 255, 177), (offset - 2, 6, (text_width + 3), 26), 2)
 			self.image.blit(text, (offset, 12))
@@ -76,8 +74,10 @@ data_string_size = 11
 
 # Main itemview params
 poses=[0, 97]
-posey = 167
+posey = 180
 size = [97, 20]
+
+[ 100, 20 ]
 class Itemview(game.Entity):
 
 	def __init__(self, items, art_dir='', is_sellable=False):
@@ -94,7 +94,7 @@ class Itemview(game.Entity):
 		self.content = [self.items[index][1], self.items[index][2]] if self.is_sellable else [self.items[index][1]]
 		self.art = pygame.image.load(os.path.join(self.art_dir, self.items[index][-1]))
 		if self.is_sellable:
-			self.art = pygame.transform.scale(self.art, (80, 80))
+			self.art = pygame.transform.scale(self.art, (160, 160))
 		else:
 			self.art = pygame.transform.scale(self.art, (160, 160))
 		self.redraw()
@@ -108,7 +108,6 @@ class Itemview(game.Entity):
 			t = text[index * length:(index + 1) * length:]
 			elements.append(t)
 			index+=1
-		print(elements)
 		return elements
 
 	def build_content(self, index):
@@ -125,12 +124,12 @@ class Itemview(game.Entity):
 		if self.is_sellable:
 			pygame.draw.line(self.image, (95, 255, 177), (poses[0], posey ), (poses[0] + size[0] - 4, posey) , 2)
 			pygame.draw.line(self.image, (95, 255, 177), (poses[1], posey ), (poses[1] + size[0] - 4, posey) , 2)
-			pygame.draw.line(self.image, (95, 255, 177), (poses[1] -4, posey ), (poses[1] -4, posey + size[1]) , 2)
+			pygame.draw.line(self.image, (95, 255, 177), (poses[0] + size[0] - 4, posey ), (poses[0] + size[0] - 4, posey + size[1]) , 2)
 			pygame.draw.line(self.image, (95, 255, 177), (poses[1] + size[0] - 4, posey ), (poses[1] + size[0] - 4, posey + size[1]) , 2)
 			text = config.FONTS[16].render(self.build_content(0), True, (105, 255, 187), (0, 0, 0))
 			self.image.blit(text, (0, posey + 2))
 			text = config.FONTS[16].render(self.build_content(1), True, (105, 255, 187), (0, 0, 0))
-			self.image.blit(text, (97, posey + 2))
+			self.image.blit(text, (poses[1], posey + 2))
 			self.image.blit(self.art, (0, 0))
 		else:
 			pygame.draw.line(self.image, (95, 255, 177), (poses[0], posey ), (poses[0] + size[0] * 2 + 18 , posey) , 2)
@@ -138,7 +137,6 @@ class Itemview(game.Entity):
 			index = 0
 			toto = self.build_content(0)
 			for el in toto:
-				print(el)
 				text = config.FONTS[14].render(el, True, (105, 255, 187), (0, 0, 0))
 				self.image.blit(text, (0, posey + 3 + index * (text.get_size()[1] + 6)))
 				index += 1
@@ -147,6 +145,129 @@ class Itemview(game.Entity):
 		# 	text = config.FONTS[14].render(" %s " % self.items[i], True, (105, 255, 187), (0, 0, 0))
 		# 	self.image.blit(text, (10, offset))
 		# 	offset += text.get_size()[1] + 6
+
+#square types [small, large, perks]
+SMALL = [ 80, 20 , 9]
+MID = [ 160, 20 , 19]
+LARGE = [ 236, 20 , 29]
+PERK =  [ 200, 100, 90]
+offset_x = 6
+class AidsView(game.Entity):
+	# item_data: list of data elements to be added
+	# item_layout: one dimension list with indexes for ui type (SMALL=1, LARGE=2, PERK=3  adding - to keep space of element)
+	def __init__(self, item_data, item_layout, data_caption, art_dir=''):
+		super(AidsView, self).__init__((config.WIDTH, config.HEIGHT))
+		self.content = []
+		self.item_data = item_data
+		self.item_layout = item_layout
+		self.data_caption = data_caption
+		self.rect[2] = 185
+		self.rect[3] = 185
+		self.art_dir = art_dir
+		self.art = None
+
+	def set_element(self, index):
+		self.content = self.item_data[index][1:len(self.data_caption) + 1:]
+		self.art = pygame.image.load(os.path.join(self.art_dir, self.item_data[index][-1]))
+		self.art = pygame.transform.scale(self.art, (155, 155))
+		self.redraw()
+
+	def split_text(self, text, length):
+		textlength = len(text)
+		index = 0
+		elements = []
+		text.rstrip()
+		while index < textlength:
+			t = text[index * length:(index + 1) * length:]
+			elements.append(t)
+			index+=1
+		return elements
+
+	def build_content(self, index, string_size):
+		if(len(self.data_caption) == 0):
+				caption = self.content[index]
+		else:
+				caption = '{}{}{}'.format(self.data_caption[index], ' ' * (string_size - (len(self.data_caption[index]) + len(str(self.content[index])))), self.content[index])
+		return caption
+
+	# def draw_small(self, index, pos_x, pos_y):
+	# 	pygame.draw.line(self.image,
+	# 		(95, 255, 177),
+	# 		(pos_x, pos_y ), (pos_x + SMALL[0] - 4, pos_y),
+	# 		 2)
+	# 	pygame.draw.line(self.image,
+	# 		(95, 255, 177),
+	# 		(pos_x + SMALL[0] - 4, pos_y ), (pos_x + SMALL[0] - 4, pos_y + SMALL[1]),
+	# 		 2)
+
+	# 	return pos_x + SMALL[0]
+
+	def draw_small(self, index, pos_x, pos_y):
+		pygame.draw.line(self.image,
+			(95, 255, 177),
+			(pos_x, pos_y ), (pos_x + SMALL[0] - 4, pos_y),
+			 2)
+		pygame.draw.line(self.image,
+			(95, 255, 177),
+			(pos_x + SMALL[0] - 4, pos_y ), (pos_x + SMALL[0] - 4, pos_y + SMALL[1]),
+			 2)
+
+	def draw_mid(self, index, pos_x, pos_y):
+		pygame.draw.line(self.image,
+			(95, 255, 177),
+			(pos_x, pos_y ), (pos_x + MID[0] - 4, pos_y),
+			 2)
+		pygame.draw.line(self.image,
+			(95, 255, 177),
+			(pos_x + MID[0] - 4, pos_y ), (pos_x + MID[0] - 4, pos_y + MID[1]),
+			 2)
+		return pos_x + MID[0]
+
+	def draw_large(self, index, pos_y):
+		pygame.draw.line(self.image,
+			(95, 255, 177),
+			(0, pos_y ), (LARGE[0], pos_y),
+			 2)
+		pygame.draw.line(self.image,
+			(95, 255, 177),
+			(LARGE[0], pos_y ), (LARGE[0], pos_y + LARGE[1]),
+			 2)
+
+	def redraw(self):
+		self.image.fill((0, 0, 0))
+		offset = 5
+		offset_x = 0
+		offset_y = 175
+		current_line_score = 0
+		for e, t in enumerate(self.item_layout):
+			if t == 1:
+				text = config.FONTS[16].render(self.build_content(e, SMALL[2]), True, (105, 255, 187), (0, 0, 0))
+				self.image.blit(text, (offset_x, offset_y))
+				self.draw_small(e, offset_x, offset_y)
+				offset_x += SMALL[0]
+				current_line_score += 1
+			if t == 2:
+				text = config.FONTS[16].render(self.build_content(e, MID[2]), True, (105, 255, 187), (0, 0, 0))
+				self.image.blit(text, (offset_x, offset_y))
+				self.draw_mid(e, offset_x, offset_y)
+				offset_y += 20 + offset_y
+			if t == 3:
+				offset_y += 20 + offset
+				text = config.FONTS[16].render(self.build_content(e, LARGE[2]), True, (105, 255, 187), (0, 0, 0))
+				self.image.blit(text, (0, offset_y))
+				self.draw_large(e, offset_y)
+			if t == 4:
+				caption = self.split_text(self.content[e], 32)
+				for i, el in enumerate(caption):
+					text = config.FONTS[14].render(el, True, (105, 255, 187), (0, 0, 0))
+					self.image.blit(text, (0, posey + i * (text.get_size()[1])))
+				self.draw_large(e, offset_y)
+			if current_line_score == 3 and e < len(self.item_layout) - 2 and self.item_layout[e + 1] != 3 :
+				offset_y += 20 + offset
+				current_line_score = 0
+				offset_x = 0
+
+		self.image.blit(self.art, (40, 0))
 
 class Menu(game.Entity):
 

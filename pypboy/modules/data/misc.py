@@ -8,7 +8,6 @@ class Module(pypboy.SubModule):
 
 	def __init__(self, *args, **kwargs):
 		super(Module, self).__init__(*args, **kwargs)
-		print(config.MISC)
 		self.menu = pypboy.ui.SelectableMenu(200, [p[0] for p in config.MISC], [], self.update_content, 0, True)
 		self.menu.rect[0] = 15
 		self.menu.rect[1] = 40

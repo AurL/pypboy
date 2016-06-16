@@ -14,11 +14,16 @@ class Module(pypboy.SubModule):
 		self.menu.rect[0] = 15
 		self.menu.rect[1] = 40
 		self.add(self.menu)
-		self.item_view = pypboy.ui.Itemview(config.WEAPON, 'art\\weapon\\', True)
-		self.item_view.rect[0] = 245
+		self.item_view = pypboy.ui.AidsView(config.WEAPON, [1, 1, 1, 1, 2], ['DAM', 'WG', 'VAL', 'CND', ''], 'art\\weapon\\')
+		self.item_view.rect[0] = 215
 		self.item_view.rect[1] = 60
 		self.add(self.item_view)
 		self.item_view.set_element(self.menu.selected)
+		# self.item_view = pypboy.ui.Itemview(config.WEAPON, 'art\\weapon\\', True)
+		# self.item_view.rect[0] = 245
+		# self.item_view.rect[1] = 60
+		# self.add(self.item_view)
+		# self.item_view.set_element(self.menu.selected)
 
 	def update_content(self, index):
 		self.item_view.set_element(index)

@@ -14,8 +14,8 @@ class Module(pypboy.SubModule):
 		self.menu.rect[0] = 15
 		self.menu.rect[1] = 40
 		self.add(self.menu)
-		self.item_view = pypboy.ui.Itemview(config.PERK, 'art\\perks\\', False)
-		self.item_view.rect[0] = 200
+		self.item_view = pypboy.ui.AidsView(config.PERK, [4], [''], 'art\\perks\\')
+		self.item_view.rect[0] = 215
 		self.item_view.rect[1] = 60
 		self.add(self.item_view)
 		self.item_view.set_element(self.menu.selected)
